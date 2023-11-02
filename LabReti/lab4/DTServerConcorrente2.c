@@ -34,14 +34,10 @@ int main (int argc , char *argv[])
     serv_add.sin_family = AF_INET;
     serv_add.sin_addr.s_addr = htonl(INADDR_ANY);
     serv_add.sin_port = htons(1024);
-    if ( bind(list_fd, (struct sockaddr *) &serv_add, sizeof(serv_add)) < 0 ) {
-        perror("bind");
-        exit(1);
-    }
-    if ( listen(list_fd, 1024) < 0 ) {
-        perror("listen");
-        exit(1);
-    }
+
+    Bind(list_fd, (struct sockaddr *) &serv_add, sizeof(serv_add))
+
+    Listen(list_fd, 1024)
 
     while(1)
     {
