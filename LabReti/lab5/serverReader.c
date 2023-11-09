@@ -17,29 +17,40 @@ int main(int argc, char **argv)
     char buff2[4096];
     listenfd = Socket(AF_INET, SOCK_STREAM, 0);
 
+    // Initialize server address structure
     servaddr.sin_family = AF_INET;
     servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
     servaddr.sin_port = htons(1025);
 
+    // Bind the socket to the server address
     Bind(listenfd, (struct sockaddr *)&servaddr, sizeof(servaddr));
 
+    // Listen for incoming connections
     Listen(listenfd, 1024);
 
     for (;;)
     {
+        // Accept a connection from the client
         connfd = Accept(listenfd, (struct sockaddr *)NULL, NULL);
 
+        // Read the length of the string from the client
         size_t str_len;
         FullRead(connfd, &str_len, sizeof(size_t));
 
-        // Leggi la stringa effettiva
+        // Read the actual string from the client
         FullRead(connfd, buff, str_len);
-        buff[str_len] = '\0';  
+        buff[str_len] = '\0';
 
+        // Calculate the number of characters read
         charRead = strlen(buff);
-        snprintf(buff2, sizeof(buff2), "Reading %d char from client\n", charRead);
-        FullWrite(connfd, buff2, strlen(buff2)); // Use strlen to get the actual length of the string
 
+        // Prepare the response string
+        snprintf(buff2, sizeof(buff2), "Reading %d char from client\n", charRead);
+
+        // Send the response back to the client
+        FullWrite(connfd, buff2, strlen(buff2));
+
+        // Close the connection with the client
         close(connfd);
     }
 }
