@@ -10,6 +10,7 @@
 int main(int argc, char **argv) {
     int sockfd, n;
     char recvline[1025];
+    char printBuffer[1025];
     struct sockaddr_in servaddr;
 
     // Check the correct number of command-line arguments
@@ -33,30 +34,23 @@ int main(int argc, char **argv) {
 
     // Establish a connection to the server
     Connect(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr));
-    printf("Connection success\n");
 
     // Calculate the length of the string to send
     size_t str_len = strlen(argv[2]);
 
-    // Send the length of the string to the server
-    FullWrite(sockfd, &str_len, sizeof(size_t));
-
     // Send the actual string to the server
-    FullWrite(sockfd, argv[2], str_len);
-
+    snprintf(printBuffer,sizeof(printBuffer),"%s",argv[2]);
+    FullWrite(sockfd, printBuffer, sizeof(printBuffer));
+   
     // Read the response from the server
-    n = FullRead(sockfd, recvline, 1024);
-    if (n < 0) {
-        perror("read error");
-        exit(1);
-    }
+    FullRead(sockfd, recvline, 1024);
 
     // Print the received data to stdout
     if (fputs(recvline, stdout) == EOF) {
         fprintf(stderr, "fputs error\n");
         exit(1);
     }
-
+    
     // Close the socket and exit the program
     close(sockfd);
     exit(0);

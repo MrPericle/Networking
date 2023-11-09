@@ -13,8 +13,8 @@ int main(int argc, char **argv)
     int listenfd, connfd;
     struct sockaddr_in servaddr;
     int charRead = 0;
-    char buff[4096];
-    char buff2[4096];
+    char buff[1025];
+    char buff2[1025];
     listenfd = Socket(AF_INET, SOCK_STREAM, 0);
 
     // Initialize server address structure
@@ -32,14 +32,9 @@ int main(int argc, char **argv)
     {
         // Accept a connection from the client
         connfd = Accept(listenfd, (struct sockaddr *)NULL, NULL);
-
-        // Read the length of the string from the client
-        size_t str_len;
-        FullRead(connfd, &str_len, sizeof(size_t));
-
+       
         // Read the actual string from the client
-        FullRead(connfd, buff, str_len);
-        buff[str_len] = '\0';
+        FullRead(connfd, buff, 1024);
 
         // Calculate the number of characters read
         charRead = strlen(buff);
@@ -48,8 +43,8 @@ int main(int argc, char **argv)
         snprintf(buff2, sizeof(buff2), "Reading %d char from client\n", charRead);
 
         // Send the response back to the client
-        FullWrite(connfd, buff2, strlen(buff2));
-
+        FullWrite(connfd, buff2, sizeof(buff2));
+       
         // Close the connection with the client
         close(connfd);
     }
